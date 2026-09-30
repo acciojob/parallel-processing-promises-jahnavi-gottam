@@ -1,13 +1,7 @@
 const output = document.getElementById("output");
 const btn = document.getElementById("download-images-button");
-
-const loading = document.createElement("div");
-loading.id = "loading";
-document.body.appendChild(loading);
-
-const error = document.createElement("div");
-error.id = "error";
-document.body.appendChild(error);
+const loading = document.getElementById("loading");
+const error = document.getElementById("error");
 
 const images = [
     { url: "https://picsum.photos/id/237/200/300" },
@@ -41,7 +35,7 @@ function downloadImages() {
     Promise.all(promises)
         .then(downloadedImages => {
             loading.innerHTML = "";
-
+            
             downloadedImages.forEach(img => {
                 output.appendChild(img);
             });
