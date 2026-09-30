@@ -1,7 +1,13 @@
 const output = document.getElementById("output");
 const btn = document.getElementById("download-images-button");
-const loading = document.getElementById("loading");
-const error = document.getElementById("error");
+
+const loading = document.createElement("div");
+loading.id = "loading";
+document.body.appendChild(loading);
+
+const error = document.createElement("div");
+error.id = "error";
+document.body.appendChild(error);
 
 const images = [
     { url: "https://picsum.photos/id/237/200/300" },
@@ -13,7 +19,9 @@ function downloadImage(url) {
     return new Promise((resolve, reject) => {
         const img = new Image();
 
-        img.onload = () => resolve(img);
+        img.onload = () => {
+            resolve(img);
+        };
 
         img.onerror = () => {
             reject(`Failed to download image: ${url}`);
@@ -31,14 +39,14 @@ function downloadImages() {
     const promises = images.map(image => downloadImage(image.url));
 
     Promise.all(promises)
-        .then((downloadedImages) => {
+        .then(downloadedImages => {
             loading.innerHTML = "";
 
-            downloadedImages.forEach((img) => {
+            downloadedImages.forEach(img => {
                 output.appendChild(img);
             });
         })
-        .catch((err) => {
+        .catch(err => {
             loading.innerHTML = "";
             error.innerHTML = err;
         });
