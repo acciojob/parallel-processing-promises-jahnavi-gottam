@@ -1,49 +1,60 @@
-const output = document.getElementById("output");
-const btn = document.getElementById("download-images-button");
+const button = document.getElementById("download-images-button");
 const loading = document.getElementById("loading");
 const error = document.getElementById("error");
+const output = document.getElementById("output");
 
-const images = [
-    { url: "https://picsum.photos/id/237/200/300" },
-    { url: "https://picsum.photos/id/238/200/300" },
-    { url: "https://picsum.photos/id/239/200/300" }
+const imageUrls = [
+  "https://picsum.photos/200/200?random=1",
+  "https://picsum.photos/200/200?random=2",
+  "https://picsum.photos/200/200?random=3",
+  "https://picsum.photos/200/200?random=4"
 ];
 
+// Function to download one image
 function downloadImage(url) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
+  return new Promise((resolve, reject) => {
+    const img = new Image();
 
-        img.onload = () => {
-            resolve(img);
-        };
+    img.onload = function () {
+      resolve(img);
+    };
 
-        img.onerror = () => {
-            reject(`Failed to download image: ${url}`);
-        };
+    img.onerror = function () {
+      reject(new Error(`Failed to download image: ${url}`));
+    };
 
-        img.src = url;
+    img.src = url;
+  });
+}
+
+// Function to download all images
+function downloadImages() {
+  // Clear previous content
+  output.innerHTML = "";
+  error.innerHTML = "";
+
+  // Show loading
+  loading.innerHTML = "Loading...";
+
+  // Download all images in parallel
+  Promise.all(imageUrls.map(downloadImage))
+    .then(function (images) {
+      // Hide loading
+      loading.innerHTML = "";
+
+      // Display all images
+      images.forEach(function (image) {
+        output.appendChild(image);
+      });
+    })
+    .catch(function (err) {
+      // Hide loading
+      loading.innerHTML = "";
+
+      // Display error
+      error.innerHTML = err.message;
     });
 }
 
-function downloadImages() {
-    output.innerHTML = "";
-    error.innerHTML = "";
-    loading.innerHTML = "Loading...";
-
-    const promises = images.map(image => downloadImage(image.url));
-
-    Promise.all(promises)
-        .then(downloadedImages => {
-            loading.innerHTML = "";
-            
-            downloadedImages.forEach(img => {
-                output.appendChild(img);
-            });
-        })
-        .catch(err => {
-            loading.innerHTML = "";
-            error.innerHTML = err;
-        });
-}
-
-btn.addEventListener("click", downloadImages);
+// Button click
+button.addEventListener("click", downloadImages);
